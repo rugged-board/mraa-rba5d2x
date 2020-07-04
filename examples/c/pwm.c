@@ -35,7 +35,7 @@
 #include "mraa/pwm.h"
 
 /* PWM declaration */
-#define PWM 3
+#define PWM 72
 
 /* PWM period in us */
 #define PWM_FREQ 200
@@ -46,8 +46,8 @@ void
 sig_handler(int signum)
 {
     if (signum == SIGINT) {
-        fprintf(stdout, "Exiting...\n");
-        flag = 0;
+	fprintf(stdout, "Exiting...\n");
+	flag = 0;
     }
 }
 
@@ -65,41 +65,41 @@ main(void)
     //! [Interesting]
     pwm = mraa_pwm_init(PWM);
     if (pwm == NULL) {
-        fprintf(stderr, "Failed to initialize PWM\n");
-        mraa_deinit();
-        return EXIT_FAILURE;
+	fprintf(stderr, "Failed to initialize PWM\n");
+	mraa_deinit();
+	return EXIT_FAILURE;
     }
 
     /* set PWM period */
     status = mraa_pwm_period_us(pwm, PWM_FREQ);
     if (status != MRAA_SUCCESS) {
-        goto err_exit;
+	goto err_exit;
     }
 
     /* enable PWM */
     status = mraa_pwm_enable(pwm, 1);
     if (status != MRAA_SUCCESS) {
-        goto err_exit;
+	goto err_exit;
     }
 
     while (flag) {
-        value = value + 0.01f;
+	value = value + 0.01f;
 
-        /* write PWM duty cyle */
-        status = mraa_pwm_write(pwm, value);
-        if (status != MRAA_SUCCESS) {
-            goto err_exit;
-        }
+	/* write PWM duty cyle */
+	status = mraa_pwm_write(pwm, value);
+	if (status != MRAA_SUCCESS) {
+		goto err_exit;
+	}
 
-        usleep(50000);
+	usleep(50000);
 
-        if (value >= 1.0f) {
-            value = 0.0f;
-        }
+	if (value >= 1.0f) {
+		value = 0.0f;
+	}
 
-        /* read PWM duty cyle */
-        output = mraa_pwm_read(pwm);
-        fprintf(stdout, "PWM value is %f\n", output);
+	/* read PWM duty cyle */
+	output = mraa_pwm_read(pwm);
+	fprintf(stdout, "PWM value is %f\n", output);
     }
 
     /* close PWM */
