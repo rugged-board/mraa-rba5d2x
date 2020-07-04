@@ -71,6 +71,19 @@ JSON platform
 Installing on your board
 ========================
 
+Installing for Rugged Board A5d2x
+---------------------------------
+
+git clone https://github.com/rugged-board/mraa-rba5d2x.git -b mraa-rba5d2x
+cd mraa-rba5d2x
+mkdir build
+cd build
+cmake ..
+make
+
+After compiling please go to below location in build folder for libraries:
+cd src/
+
 Installing on Ubuntu
 --------------------
 
