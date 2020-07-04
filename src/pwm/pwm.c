@@ -239,9 +239,6 @@ mraa_pwm_init(int pin)
         return NULL;
     }
 
-    if (board->adv_func->pwm_init_replace != NULL) {
-        return board->adv_func->pwm_init_replace(pin);
-    }
     if (board->adv_func->pwm_init_internal_replace != NULL) {
         return board->adv_func->pwm_init_internal_replace(board->adv_func, pin);
     }

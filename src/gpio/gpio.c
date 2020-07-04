@@ -45,18 +45,30 @@
 #define MAX_SIZE 64
 #define POLL_TIMEOUT
 
-static mraa_result_t
+	static mraa_result_t
 _mraa_gpio_get_valfp(mraa_gpio_context dev)
 {
-    char bu[MAX_SIZE];
-    snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/value", dev->pin);
-    dev->value_fp = open(bu, O_RDWR);
-    if (dev->value_fp == -1) {
-        syslog(LOG_ERR, "gpio%i: Failed to open 'value': %s", dev->pin, strerror(errno));
-        return MRAA_ERROR_INVALID_RESOURCE;
-    }
+	char bu[MAX_SIZE];
+	if(dev->pin>=0 && dev->pin <=31)
+	{
+		snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/value", dev->pin);}
+	else if(dev->pin>=32 && dev->pin<=63){
+		snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/value", dev->pin-32);
+	}
+	else if(dev->pin>=64 && dev->pin<=95){
+		snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/value", dev->pin-64);
+	}
+	else
+	{
+		snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/value", dev->pin-96);
+	}
+	dev->value_fp = open(bu, O_RDWR);
+	if (dev->value_fp == -1) {
+		syslog(LOG_ERR, "gpio%i: Failed to open 'value': %s", dev->pin, strerror(errno));
+		return MRAA_ERROR_INVALID_RESOURCE;
+	}
 
-    return MRAA_SUCCESS;
+	return MRAA_SUCCESS;
 }
 
 void
@@ -120,7 +132,22 @@ mraa_gpio_init_internal(mraa_adv_func_t* func_table, int pin)
 
         // then check to make sure the pin is exported.
         char directory[MAX_SIZE];
-        snprintf(directory, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/", dev->pin);
+	printf("gpio %d \n",dev->pin);
+	printf("gpio pin %d \n",pin);
+	if(dev->pin>=0 && dev->pin <=31)
+	{
+		snprintf(directory, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/", dev->pin);}
+	else if(dev->pin>=32 && dev->pin<=63){
+		snprintf(directory, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/", dev->pin-32);
+	}
+	else if(dev->pin>=64 && dev->pin<=95){
+		snprintf(directory, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/", dev->pin-64);
+	}
+	else
+	{
+		snprintf(directory, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/", dev->pin-96);
+	}
+
         struct stat dir;
         if (stat(directory, &dir) == 0 && S_ISDIR(dir.st_mode)) {
             dev->owner = 0; // Not Owner
@@ -262,6 +289,9 @@ mraa_gpio_chardev_init(int pins[], int num_pins)
     }
 
     dev->num_pins = num_pins;
+    printf("No of pins =%d\n", dev->num_pins);
+    printf("No of chips =%d\n", dev->num_chips);
+
 
     gpio_group = calloc(dev->num_chips, sizeof(struct _gpio_group));
     if (gpio_group == NULL) {
@@ -295,13 +325,14 @@ mraa_gpio_chardev_init(int pins[], int num_pins)
             return NULL;
         }
 
-        if (board->pins[pins[i]].capabilities.gpio != 1) {
+	printf("pins[i]=%d\n", pins[i]);
+
+		if (board->pins[pins[i]].capabilities.gpio != 1) {
             syslog(LOG_ERR, "[GPIOD_INTERFACE]: init: pin %d not capable of gpio", pins[i]);
             mraa_gpio_close(dev);
             return NULL;
         }
-
-        if (board->pins[pins[i]].gpio.mux_total > 0) {
+				if (board->pins[pins[i]].gpio.mux_total > 0) {
             if (mraa_setup_mux_mapped(board->pins[pins[i]].gpio) != MRAA_SUCCESS) {
                 syslog(LOG_ERR, "[GPIOD_INTERFACE]: init: unable to setup muxes for pin %d", pins[i]);
                 mraa_gpio_close(dev);
@@ -311,6 +342,8 @@ mraa_gpio_chardev_init(int pins[], int num_pins)
 
         chip_id = board->pins[pins[i]].gpio.gpio_chip;
         line_offset = board->pins[pins[i]].gpio.gpio_line;
+	printf("chip_id=%d\n", chip_id);
+	printf("line_offset=%d\n", line_offset);
 
         /* Map pin to _gpio_group structure. */
         dev->pin_to_gpio_table[i] = chip_id;
@@ -407,7 +440,7 @@ mraa_gpio_init_multi(int pins[], int num_pins)
     if (board == NULL) {
         syslog(LOG_ERR, "[GPIOD_INTERFACE]: init: platform not initialised");
         return NULL;
-    }
+    } 
 
     if (board->chardev_capable)
         return mraa_gpio_chardev_init(pins, num_pins);
@@ -628,7 +661,21 @@ mraa_gpio_interrupt_handler(void* arg)
         while (it) {
             // open gpio value with open(3)
             char bu[MAX_SIZE];
-            snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/value", it->pin);
+	    if(it->pin>=0 && it->pin <=31)
+	    {
+		    snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/value", it->pin);}
+	    else if(it->pin>=32 && it->pin<=63){
+		    snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/value", it->pin-32);
+	    }
+	    else if(it->pin>=64 && it->pin<=95){
+		    snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/value", it->pin-64);
+	    }
+	    else
+	    {
+		    snprintf(bu, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/value", it->pin-96);
+	    }
+
+
             fps[idx] = open(bu, O_RDONLY);
             if (fps[idx] < 0) {
                 syslog(LOG_ERR, "gpio%i: interrupt_handler: failed to open 'value' : %s", it->pin,
@@ -810,7 +857,21 @@ mraa_gpio_edge_mode(mraa_gpio_context dev, mraa_gpio_edge_t mode)
         }
 
         char filepath[MAX_SIZE];
-        snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/edge", it->pin);
+
+	if(it->pin>=0 && it->pin <=31)
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/edge", it->pin);}
+	else if(it->pin>=32 && it->pin<=63){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/edge", it->pin-32);
+	}
+	else if(it->pin>=64 && it->pin<=95){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/edge", it->pin-64);
+	}
+	else
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/edge", it->pin-96);
+	}
+
 
         int edge = open(filepath, O_RDWR);
         if (edge == -1) {
@@ -1019,7 +1080,22 @@ mraa_gpio_mode(mraa_gpio_context dev, mraa_gpio_mode_t mode)
         }
 
         char filepath[MAX_SIZE];
-        snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/drive", dev->pin);
+
+	if(dev->pin>=0 && dev->pin <=31)
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/drive", dev->pin);}
+	else if(dev->pin>=32 && dev->pin<=63){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/drive", dev->pin-32);
+	}
+	else if(dev->pin>=64 && dev->pin<=95){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/drive", dev->pin-64);
+	}
+	else
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/drive", dev->pin-96);
+	}
+
+
 
         int drive = open(filepath, O_WRONLY);
         if (drive == -1) {
@@ -1141,9 +1217,22 @@ mraa_gpio_dir(mraa_gpio_context dev, mraa_gpio_dir_t dir)
         if (it->value_fp != -1) {
             close(it->value_fp);
             it->value_fp = -1;
-        }
-        char filepath[MAX_SIZE];
-        snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/direction", it->pin);
+	}
+	char filepath[MAX_SIZE];
+	if(it->pin>=0 && dev->pin <=31)
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/direction", it->pin);}
+	else if(it->pin>=32 && it->pin<=63){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/direction", it->pin-32);
+	}
+	else if(it->pin>=64 && it->pin<=95){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/direction", it->pin-64);
+	}
+	else
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/direction", it->pin-96);
+	}
+
 
         int direction = open(filepath, O_RDWR);
 
@@ -1247,7 +1336,20 @@ mraa_gpio_read_dir(mraa_gpio_context dev, mraa_gpio_dir_t *dir)
             return MRAA_ERROR_INVALID_HANDLE;
         }
 
-        snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/direction", dev->pin);
+	if(dev->pin>=0 && dev->pin <=31)
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/direction", dev->pin);}
+	else if(dev->pin>=32 && dev->pin<=63){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/direction", dev->pin-32);
+	}
+	else if(dev->pin>=64 && dev->pin<=95){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/direction", dev->pin-64);
+	}
+	else
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/direction", dev->pin-96);
+	}
+
         fd = open(filepath, O_RDONLY);
         if (fd == -1) {
             syslog(LOG_ERR, "gpio%i: read_dir: Failed to open 'direction' for reading: %s",
@@ -1654,13 +1756,28 @@ mraa_gpio_get_pin_raw(mraa_gpio_context dev)
 mraa_result_t
 mraa_gpio_input_mode(mraa_gpio_context dev, mraa_gpio_input_mode_t mode)
 {
-    if (dev == NULL) {
-        syslog(LOG_ERR, "gpio: in_mode: context is invalid");
-        return MRAA_ERROR_INVALID_HANDLE;
-    }
+	if (dev == NULL) {
+		syslog(LOG_ERR, "gpio: in_mode: context is invalid");
+		return MRAA_ERROR_INVALID_HANDLE;
+	}
 
-    char filepath[MAX_SIZE];
-    snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/gpio%d/active_low", dev->pin);
+	char filepath[MAX_SIZE];
+
+	if(dev->pin>=0 && dev->pin <=31)
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PA%d/active_low", dev->pin);}
+	else if(dev->pin>=32 && dev->pin<=63){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PB%d/active_low", dev->pin-32);
+	}
+	else if(dev->pin>=64 && dev->pin<=95){
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PC%d/active_low", dev->pin-64);
+	}
+	else
+	{
+		snprintf(filepath, MAX_SIZE, SYSFS_CLASS_GPIO "/PD%d/active_low", dev->pin-96);
+	}
+
+
 
     int active_low = open(filepath, O_WRONLY);
     if (active_low == -1) {

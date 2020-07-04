@@ -32,6 +32,7 @@
 #include "arm/beaglebone.h"
 #include "arm/phyboard.h"
 #include "arm/raspberry_pi.h"
+#include "arm/sama5.h"
 #include "mraa_internal.h"
 
 
@@ -58,7 +59,11 @@ mraa_arm_platform()
                     } else {
                         platform_type = MRAA_BEAGLEBONE;
                     }
-                } else if (strstr(line, "HiKey Development Board")) {
+                } else if (strstr(line, "Atmel SAMA5")) {
+                            if(mraa_file_contains("/proc/device-tree/model", "RUGGED BOARD A5D2X")) {
+                                    platform_type = MRAA_SAMA5;
+                            }
+                    } else if (strstr(line, "HiKey Development Board")) {
                     platform_type = MRAA_96BOARDS;
                 } else if (strstr(line, "s900")) {
                     platform_type = MRAA_96BOARDS;
@@ -74,6 +79,9 @@ mraa_arm_platform()
                         platform_type = MRAA_BANANA;
                     }
                 } else if (strstr(line, "DE0/DE10-Nano-SoC")) {
+                        platform_type = MRAA_DE_NANO_SOC;
+                // For different kernel version(s) of DE10-Nano
+                } else if (strstr(line, "Altera SOCFPGA")) {
                         platform_type = MRAA_DE_NANO_SOC;
                 }
             }
@@ -100,6 +108,8 @@ mraa_arm_platform()
             platform_type = MRAA_96BOARDS;
         else if (mraa_file_contains("/proc/device-tree/model", "ZynqMP ZCU100 RevC"))
             platform_type = MRAA_96BOARDS;
+        else if (mraa_file_contains("/proc/device-tree/model", "Avnet Ultra96 Rev1"))
+            platform_type = MRAA_96BOARDS;
         else if (mraa_file_contains("/proc/device-tree/compatible", "raspberrypi,"))
             platform_type = MRAA_RASPBERRY_PI;
     }
@@ -113,6 +123,9 @@ mraa_arm_platform()
             break;
         case MRAA_PHYBOARD_WEGA:
             plat = mraa_phyboard();
+            break;
+	case MRAA_SAMA5:
+            plat = mraa_sama5();
             break;
         case MRAA_BANANA:
             plat = mraa_banana();
