@@ -1,0 +1,24 @@
+************************************************************************************************************************************************
+							    WIFI Procedure
+************************************************************************************************************************************************
+1) To change wifi configuration goto below path and follow below exapmle
+	vi /etc/wpa_supplicant.conf
+        
+	ex:-
+		ctrl_interface=/var/run/wpa_supplicant
+		ctrl_interface_group=0
+		update_config=1
+
+		network={
+        		ssid="kishore"
+        		proto=WPA2
+        		key_mgmt=WPA-PSK
+        		pairwise=CCMP TKIP
+        		group=CCMP TKIP
+        		psk="1234567"
+		} 
+2) To connect the wifi follow below command
+		a) wpa_supplicant -B -Dnl80211 -i wlan0 -c /etc/wpa_supplicant.conf
+ 
+	Note:-Both wifi and ethernet should not be same network
+	
