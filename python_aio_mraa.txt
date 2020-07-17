@@ -1,0 +1,178 @@
+Python Programming using MRAA (Aio)
+
+1. Targeted Hardware	
+
+SOM Version: PICM-001-A1
+
+CB : RuggedBoard-A5D2X
+
+CB Version : RB-A5D2X-V1.1
+
+2. Targeted Software	
+
+BSP-Yocto-A5D2X 2019-03-13
+
+- AT91Bootstrap-3.8.12
+
+- Linux Kernel v4.9.151
+
+- uboot-2018-07
+
+- Yocto 2.5.2 (sumo HEAD commit 623b77885051)
+
+3. Description
+
+-  Connect a pot(potentiometer) to rugged board a5d2x
+
+4. Required Hardware
+
+-  a5d2x-rugged board
+
+-  USB cable
+    
+-  potentiometer
+
+5. Step-by-step guide
+
+-  Connect the Pot (it will have three patch codes(wires)), center one connect to "AN" (analog pin) of mikro bus connector.
+
+-  The remaining two you can connect one to ground (pin 60) & one to vcc (pin 01) on expansion header respectively.
+   
+-  Connect the Rugged board to your system
+   
+-  Boot the board with SD card/NOR.
+    
+-  Copy the below python file to data directory of rugged board through tftp protocol. 
+
+
+6. Test aio.py with the help of potentiometer
+   
+-  Open aio.py program given below in your board terminal.
+
+-  Open the aio.py program in /data directory.
+
+PROGRAM: aio.py
+
+import mraa
+ 
+print(mraa.getVersion())
+ 
+try:
+    # initialise AIO
+    x = mraa.Aio(6)
+ 
+    # read integer value
+    print(x.read())
+ 
+    # read float value
+    print("%.5f" % x.readFloat())
+except:
+    print("Are you sure you have an ADC?")
+
+Execution :
+
+Run the above code with below command in rugged board.
+
+root@ruggedboard-a5d2x:/data# python3 aio.py
+
+Expected Output
+
+root@ruggedboard-a5d2x:/data# python3 aio.py
+random: python3: uninitialized urandom read (24 bytes read)
+libmraa[128]: libmraa version v2.0.0 initialised by user 'root' with EUID 0
+libmraa[128]: gpio: platform doesn't support chardev, falling back to sysfs
+libmraa[128]: libmraa initialised for platform 'Atmel SAMA5' of type 20
+v2.0.0
+ADC A0 read 1FD - 509
+ADC A0 read float - 0.49560
+ADC A0 read 1FC - 508
+ADC A0 read float - 0.49560
+ADC A0 read 1FC - 508
+ADC A0 read float - 0.49658
+ADC A0 read 1FD - 509
+ADC A0 read float - 0.49560
+ADC A0 read 1FA - 506
+ADC A0 read float - 0.49756
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49560
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49462
+ADC A0 read 1FA - 506
+ADC A0 read float - 0.49462
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49756
+ADC A0 read 1FC - 508
+ADC A0 read float - 0.49658
+ADC A0 read 1FD - 509
+ADC A0 read float - 0.49560
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49462
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49756
+ADC A0 read 1FE - 510
+ADC A0 read float - 0.49462
+ADC A0 read 1FD - 509
+ADC A0 read float - 0.49365
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49560
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49462
+ADC A0 read 1FA - 506
+ADC A0 read float - 0.49560
+ADC A0 read 1FA - 506
+ADC A0 read float - 0.49658
+ADC A0 read 1FA - 506
+ADC A0 read float - 0.49462
+ADC A0 read 1F9 - 505
+ADC A0 read float - 0.49658
+ADC A0 read 1FC - 508
+ADC A0 read float - 0.49462
+ADC A0 read 1FB - 507
+ADC A0 read float - 0.49560
+ADC A0 read 1FA - 506
+ADC A0 read float - 0.49365
+ADC A0 read 1F2 - 498
+ADC A0 read float - 0.48680
+ADC A0 read 1F0 - 496
+ADC A0 read float - 0.48485
+ADC A0 read 1EF - 495
+ADC A0 read float - 0.48387
+ADC A0 read 1F2 - 498
+ADC A0 read float - 0.48680
+ADC A0 read 1F0 - 496
+ADC A0 read float - 0.48680
+ADC A0 read 1F2 - 498
+ADC A0 read float - 0.48778
+ADC A0 read 1F0 - 496
+ADC A0 read float - 0.48583
+ADC A0 read 1F2 - 498
+ADC A0 read float - 0.48680
+ADC A0 read 1F0 - 496
+ADC A0 read float - 0.48680
+ADC A0 read 1F0 - 496
+ADC A0 read float - 0.48583
+ADC A0 read 1F1 - 497
+ADC A0 read float - 0.48485
+ADC A0 read 1F0 - 496
+ADC A0 read float - 0.48387
+ADC A0 read 1EF - 495
+ADC A0 read float - 0.48387
+ADC A0 read 1F2 - 498
+ADC A0 read float - 0.48485
+ADC A0 read 1F1 - 497
+ADC A0 read float - 0.48485
+ADC A0 read 1F3 - 499
+ADC A0 read float - 0.48680
+
+
+
+
+
+
+
+
+
+
+
+
+

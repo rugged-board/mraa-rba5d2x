@@ -1,0 +1,97 @@
+Python Programming using MRAA (gpio_blink)
+
+1. Targeted Hardware	
+
+SOM Version: PICM-001-A1
+
+CB : RuggedBoard-A5D2X
+
+CB Version : RB-A5D2X-V1.1
+
+2. Targeted Software	
+
+BSP-Yocto-A5D2X 2019-03-13
+
+- AT91Bootstrap-3.8.12
+
+- Linux Kernel v4.9.151
+
+- uboot-2018-07
+
+- Yocto 2.5.2 (sumo HEAD commit 623b77885051)
+
+3. Description
+
+-  Here is the simplest OnBoard-Gpio's program in mraa,to toggle three GPIO pins – 61,62,63
+
+4. Required Hardware
+
+-  a5d2x-rugged board
+    
+-  USB cable
+
+5. Step-by-step guide
+
+-  Connect the Rugged board to your system
+   
+-  Boot the board with SD card/NOR.
+    
+-  Copy the below python file to data directory of rugged board through tftp protocol. 
+
+6. Test On-board LEDs – gpio_blink.py
+
+-  Open gpio_blinky.py program given below in your board terminal.
+
+-  Open the gpio_blinky.py program in /data directory.
+
+PROGRAM: gpio_blinky.py
+
+import mraa 
+import time                                                                
+gpio_1 = mraa.Gpio(61)
+gpio_2 = mraa.Gpio(62)          # initialise gpio 62  (D4 – Ref: Schematic)                          
+gpio_3 = mraa.Gpio(63)          # initialise gpio 63  (D17)                
+gpio_1.dir(mraa.DIR_OUT)
+gpio_2.dir(mraa.DIR_OUT)         # set gpio 61 to output                                                    
+gpio_3.dir(mraa.DIR_OUT)
+while True:                                                          
+    gpio_1.write(1)                                                  
+    gpio_2.write(0)
+    gpio_3.write(1)                                                   
+    time.sleep(1)                                                      
+    gpio_1.write(0)                                                                      
+    gpio_2.write(1) 
+    gpio_3.write(0)                                                                                                                                                   
+    time.sleep(1)                                                 
+    gpio_1.write(0)                                                
+    gpio_2.write(0)                                                   
+    gpio_3.write(1)  
+    time.sleep(1)
+
+Execution :
+
+-  Run the above code with below command in rugged board.
+
+root@ruggedboard-a5d2x:/data# python3 gpio_blinky.py
+
+Expected Output:
+
+root@ruggedboard:/data# python3 gpio_blink.py
+libmraa[145]: libmraa version v2.0.0 initialised by user 'root' with EUID 0
+libmraa[145]: gpio: platform doesn't support chardev, falling back to sysfs
+libmraa[145]: libmraa initialised for platform 'Atmel SAMA5' of type 20
+gpio 77
+gpio pin 77
+gpio 81
+gpio pin 81
+gpio 83
+gpio pin 83                   ( Toogling of LED's can be seen on the ruggedboard a5d2x).
+
+
+
+
+
+
+
+
+

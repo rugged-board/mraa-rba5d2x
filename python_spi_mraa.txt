@@ -1,0 +1,200 @@
+Python Programming using MRAA (SPI)
+
+1. Targeted Hardware	
+
+SOM Version: PICM-001-A1
+
+CB : RuggedBoard-A5D2X
+
+CB Version : RB-A5D2X-V1.1
+
+2. Targeted Software	
+
+BSP-Yocto-A5D2X 2019-03-13
+
+- AT91Bootstrap-3.8.12
+
+- Linux Kernel v4.9.151
+
+- uboot-2018-07
+
+- Yocto 2.5.2 (sumo HEAD commit 623b77885051)
+
+3. Description
+
+-  To test the SPI functionality in Kernel with loop-back test.
+
+4. Required Hardware
+
+-  a5d2x-rugged board
+   
+-  USB cable
+    
+-  Patch cords
+
+5. Step-by-step guide
+
+-  Boot the board from MMC. After booting connect the one end of patch card to MOSI pin and other end to MISO pin.
+    
+-  Copy the spi.py python code in data directory of your board.
+    
+-  Run the below python code.
+
+6. Test spi.py 
+
+-  Open spi.py program given below in your board terminal.
+
+-  Open the spi.py program in /data directory.
+
+PROGRAM: spi.py
+
+import mraa as m
+import random as rand
+import array
+ 
+# intialise SPI
+dev = m.Spi(0)
+ 
+ 
+for x in range(0,100):
+    txbuf = bytearray(4)
+    for y in range(0,4):
+        txbuf[y] = rand.randrange(0, 256)
+ 
+    # send and receive data through SPI
+    rxbuf = dev.write(txbuf)
+    if rxbuf != txbuf:
+        print("Data mismatch!")
+        exit(1)
+    print(rxbuf)
+
+Execution :
+
+Run the above code with below command in rugged board.
+
+root@ruggedboard-a5d2x:/data# python3 spi.py
+
+Expected Output 
+
+When MISO & MOSI are short.
+
+oot@ruggedboard-a5d2x:/data# python3 spi.py                               
+libmraa[149]: libmraa version v2.0.0 initialised by user 'root' with EUID 0    
+libmraa[149]: gpio: platform doesn't support chardev, falling back to sysfs    
+libmraa[149]: libmraa initialised for platform 'Atmel SAMA5' of type 20        
+bytearray(b'\xd1\xa2\x80\x93')                                                 
+bytearray(b'z:l\x11')                                                          
+bytearray(b'WC\xf5\xd9')                                                       
+bytearray(b'\xcd\tq\xeb')                                                      
+bytearray(b'IEs\xfa')                                                          
+bytearray(b'\xbf\x1b\xe2b')                                                    
+bytearray(b'3l\x80\xe9')                                                       
+bytearray(b'\x8e\xf4\x05X')                                                    
+bytearray(b'C\n\xb0\xa5')                                                      
+bytearray(b'\x8f\xf5\xfe\xa1')                                                 
+bytearray(b'\xf8LPi')                                                          
+bytearray(b'"\xd5(z')                                                          
+bytearray(b'\x10*F9')                                                          
+bytearray(b'\xaf\xbef\xe9')                                                    
+bytearray(b'\x80\xbd\x10C')                                                    
+bytearray(b'\xb6\x8e\xdc8')                                                    
+bytearray(b'k\xad\x96\xcc')                                                    
+bytearray(b'\xb8y\xael')                                                       
+bytearray(b'\xddwsT')                                                          
+bytearray(b'\x16\xfc\xcf\x9f')                                                 
+bytearray(b'\xddu\x0f\xf8')                                                    
+bytearray(b'\x05\xbd\x06\xc7')                                                 
+bytearray(b'yaW\x00')                                                          
+bytearray(b'\xe7b\xfe\xf5')                                                    
+bytearray(b'\xca0\xd0\xf6')                                                    
+bytearray(b'\xbf\xdbH\xc5')                                                    
+bytearray(b'Cb\xfau')                                                          
+bytearray(b'\xc7`c\x9e')                                                       
+bytearray(b'L\\\xec8')                                                         
+bytearray(b'\x8a(\xc0\xad')                                                    
+bytearray(b'\xeb\x9fm~')                                                       
+bytearray(b'now\xc4')                                                          
+bytearray(b'\xc7]\x9b\xc6')                                                    
+bytearray(b'\x1c5W\xe7')                                                       
+bytearray(b'\xa9\xd2\xce\xd1')                                                 
+bytearray(b'\x95"\xd66')                                                       
+bytearray(b'h|\xb9\xb4')                                                       
+bytearray(b'\xff&/\xf9')                                                       
+bytearray(b'\x8f\xee\xc0d')                                                    
+bytearray(b'S=\xb5\x8b')                                                       
+bytearray(b'.\x94\x91\x96')                                                    
+bytearray(b'\x9c\xb0\x1fd')                                                    
+bytearray(b'\x83(\x03+')                                                       
+bytearray(b'\xee\xfb\x18\xde')                                                 
+bytearray(b'\xfb\xf8\x01\xf4')                                                 
+bytearray(b'[\x89_\x87')                                                       
+bytearray(b'|\x98\x7f\x8c')                                                    
+bytearray(b'n32\xe7')                                                          
+bytearray(b'Y\xc7\x9b\xda')                                                    
+bytearray(b'\xc0A\xc5p')                                                       
+bytearray(b'\x0e\xf5\x1e\x0f')                                                 
+bytearray(b'qse1')                                                             
+bytearray(b'5\xf5\x07\x1a')                                                    
+bytearray(b'\xf3\xe9y?')                                                       
+bytearray(b'\xcf\xc5om')                                                       
+bytearray(b'\x8c\xe3\x8d\xb9')                                                 
+bytearray(b'M9\x88\xa9')                                                       
+bytearray(b'\xcc\x80\x02\x1f')                                                 
+bytearray(b'\xee\x05\x8a\x99')                                                 
+bytearray(b'P8\x1ah')                                                          
+bytearray(b'\x9cT\xcb\xd0')                                                    
+bytearray(b'\xfa\x9c\xa1T')                                                    
+bytearray(b'\x98\x85\xca\x0b')                                                 
+bytearray(b'{\x0fS$')                                                          
+bytearray(b'\x80\x15\x9a\x1e')                                                 
+bytearray(b'\xd6c\xe2Q')                                                       
+bytearray(b'.\xc0\x14\xbf')                                                    
+bytearray(b'\xafV^G')                                                          
+bytearray(b'\x9a\xfd\x0c\x84')                                                 
+bytearray(b'\x8b\n\x03\x8a')                                                   
+bytearray(b'z\x02[\xf4')                                                       
+bytearray(b'\x11\xa5My')                                                       
+bytearray(b'r<V\xa2')                                                          
+bytearray(b'E\xb4\x1a\xec')                                                    
+bytearray(b'\xbap\x9c\xc4')                                                    
+bytearray(b'\xf5\x9eU\x85')                                                    
+bytearray(b'\x91\x8b\x014')                                                    
+bytearray(b'o\xf86\xcf')                                                       
+bytearray(b'"a>\x9b')                                                          
+bytearray(b'\x1e\x95\x86\x00')                                                 
+bytearray(b'\x16+)\t')                                                         
+bytearray(b'\x1f\xf7(E')                                                       
+bytearray(b'c\xdd\x97\xf5')                                                    
+bytearray(b'\x89\xbc\xfe\xb6')                                                 
+bytearray(b'W\xd0\x07\x01')                                                    
+bytearray(b'\x94?\x04Q')                                                       
+bytearray(b'\xf1\xfa\xcc\x17')                                                 
+bytearray(b'"8\xe7\xbc')                                                       
+bytearray(b'<b\t\x0c')                                                         
+bytearray(b'\xcc\x82x9')                                                       
+bytearray(b'.\x05\\\x13')                                                      
+bytearray(b'`;\xe9\xb0')                                                       
+bytearray(b'\x91\x9e\x07]')                                                    
+bytearray(b'\xb6.\xeaQ')                                                       
+bytearray(b'\x88/\x15\xaf')                                                    
+bytearray(b'\xc4\xc7^e')                                                       
+bytearray(b'\x0bd~T')                                                          
+bytearray(b'a5\x12\xb7')                                                       
+bytearray(b'\xfe\x0f\xe2\x8b')                                                 
+bytearray(b'\xaa\xf1L\xaa')
+
+When MISO & MOSI are not short.
+
+uninitialized urandom read (24 bytes read)
+libmraa[135]: libmraa version v2.0.0 initialised by user 'root' with EUID 0
+libmraa[135]: gpio: platform doesn't support chardev, falling back to sysfs
+libmraa[135]: libmraa initialised for platform 'Atmel SAMA5' of type 20
+random: python3: uninitialized urandom read (2500 bytes read)
+Data mismatch!
+
+
+
+
+
+
+

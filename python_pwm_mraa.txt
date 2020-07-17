@@ -1,0 +1,112 @@
+Python Programming using MRAA (PWM)
+
+1. Targeted Hardware	
+
+SOM Version: PICM-001-A1
+
+CB : RuggedBoard-A5D2X
+
+CB Version : RB-A5D2X-V1.1
+
+2. Targeted Software	
+
+BSP-Yocto-A5D2X 2019-03-13
+
+- AT91Bootstrap-3.8.12
+
+- Linux Kernel v4.9.151
+
+- uboot-2018-07
+
+- Yocto 2.5.2 (sumo HEAD commit 623b77885051)
+
+3. Description
+
+-  To test pwm with using of mraa python programming on a5d2x-Rugged board.
+
+4. Required Hardware
+
+-  a5d2x-rugged board
+
+-  USB cable
+
+-  External LED
+
+5. Step-by-step guide
+
+-  Boot the board from NOR/MMC.
+
+-  Please connect the positive pin of LED to the 16th pin of the M1 connector & connect the other pin of led to ground pin number 8 of the same M1 connector.
+
+-  Copy the pwm.py python file in data directory of your board. 
+
+6. Test pwm.py 
+
+-  Open pwm.py program given below in your board terminal.
+
+-  Open the pwm.py program in /data directory.
+
+PROGRAM: pwm.py
+
+import mraa
+import time
+ 
+# initialise PWM
+x = mraa.Pwm(72)
+ 
+# set PWM period
+x.period_us(700)
+ 
+# enable PWM
+x.enable(True)
+ 
+value= 0.0
+ 
+while True:
+    # write PWM value
+    x.write(value)
+ 
+    time.sleep(0.05)
+ 
+    value = value + 0.01
+    if value >= 1:
+        value = 0.0
+
+Execution :
+
+Run the above code with below command in rugged board.
+
+root@ruggedboard-a5d2x:/data# python3 pwm.py
+
+Expected Output
+
+root@ruggedboard-a5d2x:/data# python3 pwm.py
+random: python3: uninitialized urandom read (24 bytes read)
+libmraa[125]: libmraa version v2.0.0 initialised by user 'root' with EUID 0
+libmraa[125]: gpio: platform doesn't support chardev, falling back to sysfs
+libmraa[125]: libmraa initialised for platform 'Atmel SAMA5' of type 20
+0.010000
+0.020000
+0.030000
+0.040000
+0.049995
+0.059995
+0.069995
+0.079995
+0.089995
+0.099995
+0.109995
+0.119995
+0.129995
+0.139995
+0.149995
+0.160000
+0.170000
+0.180000
+0.190000
+0.200000
+0.210000
+0.220000
+
+
+
