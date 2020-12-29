@@ -153,9 +153,10 @@ mraa_sama5()
 	uart2_enabled = 0;
 
     if (mraa_file_exist("/sys/class/tty/ttyS3"))
+	uart3_enabled = 1;
+
+    if (mraa_file_exist("/sys/class/tty/ttyS4"))
 	uart4_enabled = 1;
-    else
-	uart3_enabled = 0;
 
     mraa_board_t *b = (mraa_board_t *) calloc(1, sizeof(mraa_board_t));
     if (b == NULL)
@@ -528,6 +529,28 @@ mraa_sama5()
     b->pins[73].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 1, 0 };
     b->pins[73].aio.pinmap = 6;
 
+    strncpy(b->pins[74].name,"PB00_INT_mBUS1", MRAA_PIN_NAME_SIZE);
+    b->pins[74].capabilities = (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 };
+    b->pins[74].gpio.pinmap = (1*32 + 0);
+    b->pins[74].gpio.parent_id = 0;
+    b->pins[74].gpio.mux_total = 0;
+    b->pins[74].uart.mux_total = 0;
+
+    strncpy(b->pins[75].name,"PB2_RST_mBUS1", MRAA_PIN_NAME_SIZE);
+    b->pins[75].capabilities = (mraa_pincapabilities_t){ 1, 1, 0, 0, 0, 0, 0, 0 };
+    b->pins[75].gpio.pinmap = (1*32 + 2);
+    b->pins[75].gpio.parent_id = 0;
+    b->pins[75].gpio.mux_total = 0;
+    b->pins[75].uart.mux_total = 0;
+
+    strncpy(b->pins[76].name, "PB11_URXD3", MRAA_PIN_NAME_SIZE);
+    b->pins[76].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 0, 1 };
+    b->pins[76].uart.mux_total = 0;
+
+    strncpy(b->pins[77].name, "PB12_UTXD3", MRAA_PIN_NAME_SIZE);
+    b->pins[77].capabilities = (mraa_pincapabilities_t){ 1, 0, 0, 0, 0, 0, 0, 1 };
+    b->pins[77].uart.mux_total = 0;
+
     b->aio_non_seq = 1;
     b->aio_dev[6].pin = 73;
 
@@ -554,6 +577,9 @@ mraa_sama5()
      /*****UART4****/
     b->uart_dev[4].rx = 69;
     b->uart_dev[4].tx = 68;
+     /*****UART3****/
+    b->uart_dev[3].rx = 76;
+    b->uart_dev[3].tx = 77;
 
     b->gpio_count = 0;
     int i;
